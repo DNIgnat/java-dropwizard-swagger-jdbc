@@ -2,6 +2,8 @@ package com.kainos.ea.service;
 
 import com.kainos.ea.dao.EmployeeDao;
 import com.kainos.ea.exception.DatabaseConnectionException;
+import com.kainos.ea.exception.UserDoesNotExistException;
+import com.kainos.ea.model.Employee;
 import com.kainos.ea.model.EmployeeRequest;
 import com.kainos.ea.util.DatabaseConnector;
 import org.junit.jupiter.api.Test;
@@ -75,6 +77,18 @@ class EmployeeServiceTest {
     This should pass without code changes
      */
 
+
+    @Test
+    void getEmployee_whenDaoThrows_expectedSQLExceptionThrown() throws SQLException, DatabaseConnectionException{
+        int employeeId = 1;
+        Mockito.when(databaseConnector.getConnection()).thenReturn(conn);
+        Mockito.when(employeeDao.getEmployee(employeeId,conn)).thenThrow(SQLException.class);
+
+        assertThrows(SQLException.class,
+                () -> employeeService.getEmployee(employeeId));
+    }
+
+
     /*
     Mocking Exercise 2
 
@@ -87,6 +101,20 @@ class EmployeeServiceTest {
     This should pass without code changes
      */
 
+    @Test
+    void getEmployee_whenDaoReturnId_expectIdReturned() throws SQLException, DatabaseConnectionException{
+        int expectedResult = 2;
+        int employeeId = 2;
+
+        Mockito.when(databaseConnector.getConnection()).thenReturn(conn);
+
+        Employee employee = new Employee(employeeId);
+        Mockito.when(employeeDao.getEmployee(employeeId, conn)).thenReturn(employee);
+
+
+        assertEquals(employeeService.getEmployee(employeeId),employee);
+    }
+
     /*
     Mocking Exercise 3
 
@@ -98,6 +126,7 @@ class EmployeeServiceTest {
 
     This should fail, make code changes to make this test pass
      */
+
 
     /*
     Mocking Exercise 4
@@ -134,4 +163,14 @@ class EmployeeServiceTest {
 
     This should pass without code changes
      */
+
+    @Test
+    void someTest() throws SQLException, DatabaseConnectionException{
+        Mockito.when(databaseConnector.getConnection()).thenReturn(conn);
+        Mockito.when(employeeDao.getEmployees(conn)).thenThrow(SQLException.class);
+
+        assertThrows(SQLException.class,
+                () -> employeeService.getEmployees());
+
+    }
 }

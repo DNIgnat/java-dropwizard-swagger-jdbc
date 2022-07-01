@@ -23,6 +23,8 @@ public class EmployeeService {
     }
 
     public Employee getEmployee(int employeeId) throws DatabaseConnectionException, SQLException {
+        Employee employee = employeeDao.getEmployee(employeeId, databaseConnector.getConnection());
+
         return employeeDao.getEmployee(employeeId, databaseConnector.getConnection());
     }
 

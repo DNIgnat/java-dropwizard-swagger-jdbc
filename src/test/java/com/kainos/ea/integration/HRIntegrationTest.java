@@ -2,6 +2,7 @@ package com.kainos.ea.integration;
 
 import com.kainos.ea.WebServiceApplication;
 import com.kainos.ea.WebServiceConfiguration;
+import com.kainos.ea.exception.SalaryTooLowException;
 import com.kainos.ea.model.Employee;
 import com.kainos.ea.model.EmployeeRequest;
 import io.dropwizard.configuration.ResourceConfigurationSourceProvider;
@@ -14,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.util.List;
 
 @ExtendWith(DropwizardExtensionsSupport.class)
@@ -75,6 +77,38 @@ public class HRIntegrationTest {
     This should pass without code changes
      */
 
+    @Test
+    void firstTest(){
+        EmployeeRequest employeeRequest = new EmployeeRequest(
+                30000,
+                "Integration",
+                "Test",
+                "tbloggs@email.com",
+                "1 Main Street",
+                "Main Road",
+                "Belfast",
+                "Antrim",
+                "BT99BT",
+                "Northern Ireland",
+                "12345678901",
+                "12345678",
+                "AA1A11AA"
+        );
+
+        int id = APP.client().target("http://localhost:8080/hr/employee")
+                .request()
+                .post(Entity.entity(employeeRequest, MediaType.APPLICATION_JSON_TYPE))
+                .readEntity(Integer.class);
+
+        Employee response = APP.client().target("http://localhost:8080/hr/employee/"+id+"/")
+                .request()
+                .get(Employee.class);
+
+
+        Assertions.assertEquals(response.getEmployeeId(),id);
+
+    }
+
     /*
     Integration Test Exercise 2
 
@@ -86,7 +120,33 @@ public class HRIntegrationTest {
 
     This should fail, make code changes to make this test pass
      */
+    /*
+    @Test
+    void secondTest() {
+        EmployeeRequest employeeRequest = new EmployeeRequest(
+                10000,
+                "Integration",
+                "Test",
+                "tbloggs@email.com",
+                "1 Main Street",
+                "Main Road",
+                "Belfast",
+                "Antrim",
+                "BT99BT",
+                "Northern Ireland",
+                "12345678901",
+                "12345678",
+                "AA1A11AA"
+        );
 
+        int response = APP.client().target("http://localhost:8080/hr/employee")
+                .request()
+                .post(Entity.entity(employeeRequest, MediaType.APPLICATION_JSON_TYPE))
+                .readEntity(Integer.class);
+
+        Assertions.assertEquals(response.Status(),400);
+    }
+    */
     /*
     Integration Test Exercise 3
 
@@ -110,4 +170,17 @@ public class HRIntegrationTest {
 
     This should fail, make code changes to make this test pass
      */
+
+    @Test
+    void fourthTest(){
+        int id = 123456;
+
+        Response response = APP.client().target("http://localhost:8080/hr/employee/"+id+"/")
+                .request()
+                .get();
+
+
+        Assertions.assertEquals(response.getStatus(),400);
+
+    }
 }
